@@ -8,7 +8,6 @@ contract StakingReward {
     uint public rewardRate = 100;
     uint public lastUpdateTime;
     uint public rewardPerTokenStored;
-    uint le18 = 1000000000000000000;
 
     mapping(address => uint) public userRewardPerTokenPaid;
     mapping(address => uint) public rewards;
@@ -26,13 +25,13 @@ contract StakingReward {
             return 0;
         }
         return rewardPerTokenStored + (
-            rewardRate * (block.timestamp - lastUpdateTime) * le18 / _totalSupply
+            rewardRate * (block.timestamp - lastUpdateTime) * 1e18 / _totalSupply
             );
     }
 
     function earned(address account) public view returns (uint){
         return (
-            _balances[account] * rewardPerToken() - userRewardPerTokenPaid[account]) / le18;
+            _balances[account] * rewardPerToken() - userRewardPerTokenPaid[account]) / 1e18;
     }
 
     modifier updateReward(address account) {
@@ -57,7 +56,9 @@ contract StakingReward {
     }
 
     function getReward() external updateReward(msg.sender) {
-
+        uint reward = rewards[msg.sender];
+        rewards[msg.sender] = 0;
+        rewardsToken.transfer(msg.sender, reward);
     }
 
 }
